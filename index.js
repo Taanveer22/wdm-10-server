@@ -7,7 +7,6 @@
 // 6. Server Startup (app.listen())
 // ===========================================================
 
-
 // step 1
 require("dotenv").config();
 const express = require("express");
@@ -39,6 +38,17 @@ async function run() {
   try {
     // Connect the client to the server
     await client.connect();
+    console.log("conneted successfully to server");
+    const db = client.db("orchidDB");
+    const moviesCollection = db.collection("moviesColl");
+
+    //=========== create opertion for movies
+    app.post("/movies", async (req, res) => {
+      const doc = req.body;
+      const result = await moviesCollection.insertOne(doc);
+      res.send(result);
+    });
+    
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
