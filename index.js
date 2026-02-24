@@ -11,7 +11,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // step 2
 const app = express();
@@ -41,6 +41,21 @@ async function run() {
     console.log("conneted successfully to server");
     const db = client.db("orchidDB");
     const moviesCollection = db.collection("moviesColl");
+    const favoriteMoviesCollection = db.collection("favoritemoviesColl");
+
+    //=========== read opertion for all movies
+    app.get("/movies", async (req, res) => {
+      const cursor = moviesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //=========== read opertion for one movies
+    app.get("/movies/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await moviesCollection.findOne(query);
+      res.send(result);
+    });
 
     //=========== create opertion for movies
     app.post("/movies", async (req, res) => {
@@ -48,7 +63,7 @@ async function run() {
       const result = await moviesCollection.insertOne(doc);
       res.send(result);
     });
-    
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
