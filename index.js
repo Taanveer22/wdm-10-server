@@ -75,10 +75,32 @@ async function run() {
 
     // --------------------------------------------------------
 
+    //=========== read opertion for some fav movies
+    app.get("/favMovies", async (req, res) => {
+      const query = { email: req.query.email };
+      const result = await favMoviesCollection.find(query).toArray();
+      res.send(result);
+    });
+
     //=========== create opertion for fav movies
     app.post("/favMovies", async (req, res) => {
       const doc = req.body;
+      // Search as plain string
+      // ✅ check both movieId AND email
+      const existing = await favMoviesCollection.findOne({
+        // ✅ comes as _id from frontend, store as movieId in DB
+        movieId: doc._id,
+        emai: doc.email,
+      });
+
+      if (existing) {
+        return res.send({ message: "already in favorites" });
+      }
+
       const newDoc = {
+        // dont forget email
+        email: doc.email,
+        // ✅ store original _id as movieId
         movieId: doc._id,
         poster: doc.poster,
         title: doc.title,
@@ -87,6 +109,7 @@ async function run() {
         release: doc.release,
         rating: doc.rating,
       };
+
       const result = await favMoviesCollection.insertOne(newDoc);
       res.send(result);
     });
