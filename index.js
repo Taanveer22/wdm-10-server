@@ -41,7 +41,9 @@ async function run() {
     console.log("conneted successfully to server");
     const db = client.db("orchidDB");
     const moviesCollection = db.collection("moviesColl");
-    const favoriteMoviesCollection = db.collection("favoritemoviesColl");
+    const favMoviesCollection = db.collection("favMoviesColl");
+
+    // ---------------------------------------------------------
 
     //=========== read opertion for all movies
     app.get("/movies", async (req, res) => {
@@ -64,9 +66,28 @@ async function run() {
       res.send(result);
     });
 
+    //=========== delete opertion for movies
     app.delete("/movies/:id", async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const result = await moviesCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // --------------------------------------------------------
+
+    //=========== create opertion for fav movies
+    app.post("/favMovies", async (req, res) => {
+      const doc = req.body;
+      const newDoc = {
+        movieId: doc._id,
+        poster: doc.poster,
+        title: doc.title,
+        genre: doc.genre,
+        duration: doc.duration,
+        release: doc.release,
+        rating: doc.rating,
+      };
+      const result = await favMoviesCollection.insertOne(newDoc);
       res.send(result);
     });
 
