@@ -45,9 +45,14 @@ async function run() {
 
     // ---------------------------------------------------------
 
-    //=========== read opertion for all movies
+    //=========== read opertion for all and filtered movies
     app.get("/movies", async (req, res) => {
-      const cursor = moviesCollection.find();
+      let query = {};
+      // If an email is provided in the URL, filter by it
+      if (req.query.email) {
+        query = { email: req.query.email };
+      }
+      const cursor = moviesCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -88,9 +93,9 @@ async function run() {
       // Search as plain string
       // ✅ check both movieId AND email
       const existing = await favMoviesCollection.findOne({
-        // ✅ comes as _id from frontend, store as movieId in DB
-        movieId: doc._id,
-        emai: doc.email,
+        // ✅ comes as movieId from frontend, store as movieId in DB
+        email: doc.email,
+        movieId: doc.movieId,
       });
 
       if (existing) {
@@ -98,10 +103,10 @@ async function run() {
       }
 
       const newDoc = {
-        // dont forget email
+        // store user email
         email: doc.email,
-        // ✅ store original _id as movieId
-        movieId: doc._id,
+        // ✅ store consistent movieId
+        movieId: doc.movieId,
         poster: doc.poster,
         title: doc.title,
         genre: doc.genre,
