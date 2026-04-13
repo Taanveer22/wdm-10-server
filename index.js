@@ -43,9 +43,9 @@ async function run() {
     const moviesCollection = db.collection("moviesColl");
     const favMoviesCollection = db.collection("favMoviesColl");
 
-    // ---------------------------------------------------------
+    // ######################################################
 
-    //=========== read opertion for all and filtered movies
+    //=========== read opertion for all and some movies
     app.get("/movies", async (req, res) => {
       let query = {};
       // If an email is provided in the URL, filter by it
@@ -64,6 +64,8 @@ async function run() {
       res.send(result);
     });
 
+  
+
     //=========== create opertion for movies
     app.post("/movies", async (req, res) => {
       const doc = req.body;
@@ -78,7 +80,7 @@ async function run() {
       res.send(result);
     });
 
-    // --------------------------------------------------------
+    // ######################################################
 
     //=========== read opertion for some fav movies
     app.get("/favMovies", async (req, res) => {
@@ -116,6 +118,13 @@ async function run() {
       };
 
       const result = await favMoviesCollection.insertOne(newDoc);
+      res.send(result);
+    });
+
+    //=========== delete opertion for fav movies
+    app.delete("/favMovies/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await favMoviesCollection.deleteOne(query);
       res.send(result);
     });
 
