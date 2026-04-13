@@ -57,14 +57,19 @@ async function run() {
       res.send(result);
     });
 
+    //=========== read opertion for 6 featured movies
+    app.get("/movies/featured", async (req, res) => {
+      const cursor = moviesCollection.find();
+      const result = await cursor.sort({ rating: -1 }).limit(6).toArray();
+      res.send(result);
+    });
+
     //=========== read opertion for one movies
     app.get("/movies/:id", async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const result = await moviesCollection.findOne(query);
       res.send(result);
     });
-
-  
 
     //=========== create opertion for movies
     app.post("/movies", async (req, res) => {
