@@ -1,27 +1,17 @@
-// ==================Recommended Order=================
-// 1. Required by common js (express, cors, etc.)
-// 2 .Instance Initialization (const app = express())
-// 3. Middleware Setup (cors, json, logging)
-// 4. Database Configuration & Connection (MongoDB client setup and MongoDB run() function)
-// 5. Routes(rest api methods)
-// 6. Server Startup (app.listen())
-// ===========================================================
-
-// step 1
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
-// step 2
+//Instance Initialization
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// step 3
+//Middleware Setup
 app.use(cors());
 app.use(express.json());
 
-// step 4
+//Database Configuration & Connection with HTTP methods and REST api routes
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.89rnkti.mongodb.net/?appName=Cluster0`;
 // console.log(uri);
 
@@ -37,12 +27,14 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server
-    await client.connect();
+    // await client.connect();
     console.log("conneted successfully to server");
     const db = client.db("orchidDB");
     const moviesCollection = db.collection("moviesColl");
     const favMoviesCollection = db.collection("favMoviesColl");
 
+    // ######################################################
+    // Movies Collection
     // ######################################################
 
     //=========== read opertion for all and some movies
@@ -94,6 +86,8 @@ async function run() {
     });
 
     // ######################################################
+    // Favorite Movies Collection
+    // ######################################################
 
     //=========== read opertion for some fav movies
     app.get("/favMovies", async (req, res) => {
@@ -142,7 +136,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
     );
@@ -152,12 +146,11 @@ async function run() {
 }
 run();
 
-// step 5
+//Server Run
 app.get("/", (req, res) => {
   res.send("server is running...");
 });
 
-// step 6
 app.listen(PORT, () => {
   console.log(`this server is listening on PORT ${PORT}`);
 });
