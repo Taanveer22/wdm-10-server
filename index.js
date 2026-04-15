@@ -48,10 +48,18 @@ async function run() {
     //=========== read opertion for all and some movies
     app.get("/movies", async (req, res) => {
       let query = {};
-      // If an email is provided in the URL, filter by it
+      // Filter by email
       if (req.query.email) {
-        query = { email: req.query.email };
+        query.email = req.query.email;
       }
+      // Search by movie title (case-insensitive)
+      if (req.query.search) {
+        query.title = {
+          $regex: req.query.search,
+          $options: "i",
+        };
+      }
+
       const cursor = moviesCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
